@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Moz MASTERBOT</title>
+<style>
+/* Corpo e centralização */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin:0;
+  padding:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  background: linear-gradient(-45deg,#1a2a6c,#b21f1f,#fdbb2d,#00c6ff);
+  background-size:400% 400%;
+  animation:gradientBG 15s ease infinite;
+  color:#fff;
+}
+@keyframes gradientBG{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+.container{
+  width:700px;
+  text-align:center;
+}
+
+/* Inputs e botões */
+input, select{
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  border-radius:10px;
+  border:none;
+  background:#222;
+  color:#fff;
+  font-size:16px;
+}
+input::placeholder, select{color:#ccc;}
+
+button{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:10px;
+  background:#ff0066;
+  color:#fff;
+  font-size:17px;
+  cursor:pointer;
+  font-weight:bold;
+  margin-top:10px;
+  transition:0.3s;
+}
+button:hover{background:#ff3399;}
+
+.linkPequeno a{
+  color:#ff66aa;
+  text-decoration:none;
+  font-size:14px;
+}
+.linkPequeno a:hover{text-decoration:underline;}
+
+/* Áreas */
+#botArea,#painelAdmin{display:none;}
+
+#loginArea{
+  background: rgba(255,255,255,0.08);
+  border-radius:25px;
+  padding:50px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Retângulo de sinais moderno */
+#sinaisContainer{
+  margin-top:30px;
+  background:#fff;
+  color:#000;
+  border-radius:20px;
+  padding:25px;
+  min-height:400px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-gap:20px;
+}
+
+.sinal{
+  background:#f5f5f5;
+  padding:25px;
+  border-radius:15px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  font-weight:bold;
+  color:#000;
+  font-size:20px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.sinal:hover{
+  transform: translateY(-3px);
+  box-shadow:0 6px 20px rgba(0,0,0,0.25);
+}
+.sinal .multiplicador{
+  color:#8000ff;
+  font-size:22px;
+  margin-top:8px;
+  font-weight:bold;
+}
+.sinal .rosa{
+  color:#ff66cc;
+  font-size:18px;
+  margin-top:5px;
+  font-weight:bold;
+  text-transform:uppercase;
+}
+
+#listaContas{margin-top:20px; text-align:left; max-height:220px; overflow-y:auto;}
+#listaContas div{background:#222; padding:10px; margin-bottom:6px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-size:15px;}
+
+/* Ajustes para dispositivos móveis */
+@media (max-width: 768px){
+  .container{
+    width: 90%;
+    padding: 10px;
+  }
+  input, select, button{
+    font-size: 14px;
+    padding: 12px;
+  }
+  #sinaisContainer{
+    grid-template-columns: 1fr; /* sinais em coluna única */
+    padding: 15px;
+  }
+  .sinal{
+    font-size: 18px;
+    padding: 15px;
+  }
+  .sinal .multiplicador{
+    font-size: 20px;
+  }
+  .sinal .rosa{
+    font-size: 16px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Login -->
+  <div id="loginArea">
+    <h2>Login Moz MASTERBOT</h2>
+    <input type="email" id="email" placeholder="E-mail" autocomplete="off">
+    <input type="password" id="senha" placeholder="Senha" autocomplete="off">
+    <button onclick="login()">Entrar</button>
+    <div class="linkPequeno" style="margin-top:10px;">
+      Não tem conta? <a href="https://wa.me/852832276" target="_blank">Criar conta pelo WhatsApp</a>
+    </div>
+    <div class="linkPequeno" style="margin-top:5px;font-size:12px;opacity:0.6;">
+      <a href="#" onclick="abrirPainel()">Clique aqui</a>
+    </div>
+  </div>
+
+  <!-- Bot -->
+  <div id="botArea">
+    <h2>Moz MASTERBOT - Bot</h2>
+    <button onclick="gerarSinais()">Gerar Sinais</button>
+    <button onclick="sairBot()" style="background:#333; margin-top:10px;">Sair</button>
+    <div id="sinaisContainer"></div>
+  </div>
+
+  <!-- Painel Admin discreto -->
+  <div id="painelAdmin">
+    <input type="password" id="senhaAdmin" placeholder="Senha mestre" autocomplete="off" style="margin-bottom:10px;">
+    <button onclick="acessarPainel()">Entrar</button>
+
+    <div id="adminContent" style="display:none; margin-top:20px;">
+      <input type="email" id="novoEmail" placeholder="E-mail do usuário" autocomplete="off">
+      <input type="password" id="novaSenha" placeholder="Senha do usuário" autocomplete="new-password">
+      <select id="pacoteUsuario">
+        <option value="diario">Pacote Diário</option>
+        <option value="semanal">Pacote Semanal</option>
+        <option value="mensal">Pacote Mensal</option>
+      </select>
+      <button onclick="criarUsuario()">Registrar Usuário</button>
+
+      <div id="listaContas"></div>
+    </div>
+
+    <button onclick="voltarLogin()" style="margin-top:10px;">Voltar</button>
+  </div>
+
+</div>
+
+<script>
+// Senha mestre
+const senhaMestre = "ogatocomeuagalinha";
+
+// Abrir painel discreto
+function abrirPainel(){
+  document.getElementById('loginArea').style.display='none';
+  document.getElementById('painelAdmin').style.display='block';
+  document.getElementById('adminContent').style.display='none';
+  document.getElementById('senhaAdmin').style.display='block';
+}
+
+// Acessar painel do responsável
+function acessarPainel(){
+  const senha = document.getElementById('senhaAdmin').value.trim();
+  if(senha === senhaMestre){
+    document.getElementById('adminContent').style.display='block';
+    document.getElementById('senhaAdmin').style.display='none';
+    listarContas();
+  } else {
+    alert('Senha incorreta!');
+  }
+}
+
+// Criar usuário com expiração
+function criarUsuario(){
+  const email = document.getElementById('novoEmail').value.trim();
+  const senha = document.getElementById('novaSenha').value.trim();
+  const pacote = document.getElementById('pacoteUsuario').value;
+  if(!email || !senha){ alert('Preencha todos os campos'); return; }
+
+  let expiraEm = new Date();
+  if(pacote==='diario') expiraEm.setTime(expiraEm.getTime() + 24*60*60*1000);
+  else if(pacote==='semanal') expiraEm.setDate(expiraEm.getDate()+7);
+  else if(pacote==='mensal') expiraEm.setDate(expiraEm.getDate()+30);
+
+  const usuarios = JSON.parse(localStorage.getItem('usuarios')||'[]');
+  usuarios.push({email, senha, pacote, expira: expiraEm.getTime()});
+  localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+  alert('Usuário criado com sucesso!');
+  document.getElementById('novoEmail').value='';
+  document.getElementById('novaSenha').value='';
+  document.getElementById('pacoteUsuario').value='diario';
+  listarContas();
+}
+
+// Listar contas e mostrar botão eliminar
+function listarContas(){
+  const lista = document.getElementById('listaContas');
+  lista.innerHTML='';
+  const usuarios = JSON.parse(localStorage.getItem('usuarios')||'[]');
+  usuarios.forEach((u,index)=>{
+    const div = document.createElement('div');
+    const dataExp = new Date(u.expira).toLocaleString();
+    div.innerHTML = `${u.email} (${u.pacote}) - Expira: ${dataExp} <button onclick="removerConta(${index})">Eliminar</button>`;
+    lista.appendChild(div);
+  });
+}
+
+// Remover conta
+function removerConta(indice){
+  if(!confirm('Deseja realmente eliminar esta conta?')) return;
+  const usuarios = JSON.parse(localStorage.getItem('usuarios')||'[]');
+  usuarios.splice(indice,1);
+  localStorage.setItem('usuarios',JSON.stringify(usuarios));
+  listarContas();
+}
+
+// Voltar ao login
+function voltarLogin(){
+  document.getElementById('painelAdmin').style.display='none';
+  document.getElementById('loginArea').style.display='block';
+  document.getElementById('senhaAdmin').value='';
+  document.getElementById('adminContent').style.display='none';
+  document.getElementById('senhaAdmin').style.display='block';
+}
+
+// Logout do bot para login
+function sairBot(){
+  document.getElementById('botArea').style.display='none';
+  document.getElementById('loginArea').style.display='block';
+  document.getElementById('sinaisContainer').innerHTML='';
+}
+
+// Login do usuário
+function login(){
+  const email = document.getElementById('email').value.trim();
+  const senha = document.getElementById('senha').value.trim();
+  let usuarios = JSON.parse(localStorage.getItem('usuarios')||'[]');
+
+  // Remove contas expiradas
+  const now = Date.now();
+  usuarios = usuarios.filter(u => u.expira > now);
+  localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+  const usuario = usuarios.find(u => u.email===email && u.senha===senha);
+  if(usuario){
+    document.getElementById('loginArea').style.display='none';
+    document.getElementById('botArea').style.display='block';
+  } else {
+    alert('E-mail ou senha incorretos ou conta expirada.');
+  }
+}
+
+// Gerar sinais com diferença de 2 a 3 minutos
+function gerarSinais(){
+  const container = document.getElementById('sinaisContainer');
+  container.innerHTML='';
+  const now = new Date();
+  let hora = now.getHours();
+  let minutoBase = now.getMinutes();
+  const multiplicador = "2x – 5x";
+
+  for(let i=0;i<9;i++){
+    // Adiciona 2 ou 3 minutos aleatoriamente
+    const incremento = 2 + Math.floor(Math.random()*2); // 2 ou 3
+    minutoBase += incremento;
+
+    // Ajusta hora se minutos ultrapassarem 59
+    if(minutoBase >= 60){
+      hora = (hora + Math.floor(minutoBase/60)) % 24;
+      minutoBase = minutoBase % 60;
+    }
+
+    const segundo = Math.floor(Math.random()*60); // segundos aleatórios 0-59
+
+    const div = document.createElement('div');
+    div.className='sinal';
+    div.innerHTML = `<span class="hora">${hora.toString().padStart(2,'0')}:${minutoBase.toString().padStart(2,'0')}:${segundo.toString().padStart(2,'0')}</span>
+                     <span class="multiplicador">${multiplicador}</span>
+                     <span class="rosa">ROSA</span>`;
+    container.appendChild(div);
+  }
+}
+</script>
+</body>
+</html> 
